@@ -138,10 +138,58 @@ class KakaoLogoutView(APIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    authentication_classes = [CookieAuthentication]  # CookieAuthentication 적용
+    authentication_classes = [CookieAuthentication]
     permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=['GET'])
     def current_user(self, request):
         user_serializer = self.serializer_class(request.user)
         return Response(user_serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['POST'])
+    def register(self, request):
+        if request.method == 'POST':
+            # 회원가입
+            nickname = request.data.get('nickname')
+            profile_image = request.data.get('profile_image')
+
+            if not nickname:
+                return Response({'error': '닉네임은 필수 필드입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user = User.objects.get(id=request.user.id)
+            user.nickname = nickname
+            user.profile_image = profile_image
+            user.save()
+
+            user_serializer = self.serializer_class(user)
+            return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+    
+    def update(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.user.id)
+        if request.method == 'PATCH':
+            nickname = request.data.get('nickname')
+            profile_image = request.data.get('profile_image')
+            
+            if nickname:
+                user.nickname = nickname
+            
+            if profile_image:
+                user.profile_image = profile_image
+
+            user.save()
+            user_serializer = self.serializer_class(user)
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        return super().update(request, *args, **kwargs)
+        
+
+    @action(detail=False, methods=['GET'])
+    def check_nickname(self, request):
+        nickname = request.query_params.get('nickname')
+        if nickname:
+            exists = User.objects.filter(nickname=nickname).exists()
+            if exists:
+                return Response({'nickname_exists': True}, status=status.HTTP_200_OK)
+            else:
+                return Response({'nickname_exists': False}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': '닉네임을 제공해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
