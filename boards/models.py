@@ -38,7 +38,7 @@ class Post(models.Model):
     
     def __str__(self):
         return self.title
-      
+
 @receiver(post_save, sender=Post) # Post 모델 객체가 저장될 때 호출
 def assign_category_id(sender, instance, created, **kwargs):
     if created: # 새로운 글 생성된 경우
@@ -56,3 +56,24 @@ class PostImage(models.Model):
    
    def __str__(self):
         return str(self.post)
+   
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE) # 좋아요 누른 사용자
+    post = models.ForeignKey(Post, on_delete=models.CASCADE) # 좋아요 누른 게시글
+
+    class Meta:
+        unique_together = ('user', 'post')  # 사용자는 같은 게시글에 중복 좋아요 불가능
+    
+    def __str__(self):
+        return f"{self.user} 님이 좋아요한 글: {self.post.title}"
+   
+   
+class Scrap(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # 스크랩한 사용자
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # 스크랩한 게시글
+
+    class Meta:
+        unique_together = ('user', 'post')  # 사용자는 같은 게시글 중복 스크랩 불가능
+
+    def __str__(self):
+        return f"{self.user} 님이 스크랩한 글: {self.post.title}"

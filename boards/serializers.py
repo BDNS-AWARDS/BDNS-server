@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, PostImage
+from .models import *
 
 class PostImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -54,3 +54,21 @@ class PostRetrieveSeraizlier(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
         depth = 1
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = '__all__'
+
+class ScrapSerializer(serializers.ModelSerializer):
+    post_title = serializers.SerializerMethodField()
+    post_writer = serializers.SerializerMethodField()
+    class Meta:
+        model = Scrap
+        fields = '__all__'
+
+    def get_post_title(self, scrap):
+        return scrap.post.title
+
+    def get_post_writer(self, scrap):
+        return scrap.post.writer.username

@@ -38,7 +38,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = models.CharField(max_length=255, unique=True)
     nickname = models.CharField(max_length=255, blank=True, null=True)
-    profile_imgae = models.ImageField(blank=True, null=True)
+    profile_image = models.ImageField(blank=True, null=True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
