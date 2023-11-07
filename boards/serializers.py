@@ -42,7 +42,7 @@ class PostListSerializer(serializers.ModelSerializer):
 class PostCreateSeraizlier(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = 'title', 'content', 'category'  
+        fields = 'title', 'content', 'category', 'category_id', 'writer'
 
 class PostUpdateSerailizer(serializers.ModelSerializer):
     class Meta:
