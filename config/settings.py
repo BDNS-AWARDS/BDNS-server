@@ -26,6 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 KAKAO_REST_API_KEY=config('KAKAO_REST_API_KEY')
 KAKAO_ADMIN_KEY=config('KAKAO_ADMIN_KEY')
+JWT_SECRET_KEY = config('JWT_SECRET_KEY')
+JWT_ALGORITHM = config('JWT_ALGORITHM')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -174,6 +176,8 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
     'ROTATE_REFRESH_TOKENS': False,
     'TOKEN_USER_CLASS': 'django.contrib.auth.models.User',
+    'ALGORITHM': JWT_ALGORITHM,  # 알고리즘 설정
+    'SIGNING_KEY': JWT_SECRET_KEY,  # JWT 시크릿 키 설정
 }
 
 SITE_ID = 1

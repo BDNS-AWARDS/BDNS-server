@@ -4,10 +4,14 @@ from .serializers import PostSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from accounts.authentication import AllowAnyAuthentication, CookieAuthentication
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = [AllowAny]
+    authentication_classes = [AllowAnyAuthentication]
 
 class PostListView(generics.ListCreateAPIView):
     queryset = Post.objects.all()
