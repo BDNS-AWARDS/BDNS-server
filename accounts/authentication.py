@@ -13,7 +13,7 @@ class CookieAuthentication(BaseAuthentication):
         if not access_token:
             return None
         
-        payload = jwt.decode(access_token, settings.SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(access_token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
 
         expire = payload.get('exp')
 
@@ -30,3 +30,7 @@ class CookieAuthentication(BaseAuthentication):
             raise AuthenticationFailed('No such user')
         
         return (user, None)
+    
+class AllowAnyAuthentication(BaseAuthentication):
+    def authenticate(self, request):
+        return (None, None)

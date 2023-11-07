@@ -5,11 +5,10 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 
 router = routers.DefaultRouter()
-router.register(r'board', PostViewSet)
+router.register(r'board', PostViewSet, basename="board")
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('board', PostListView.as_view()),  # 게시판 목록 조회, 게시글 생성
-    path('board/<str:category>', PostListView.as_view()),  # 카테고리별 게시판의 게시글 조회
-    path('board/<str:category>/<int:post_id>', PostDetailView.as_view()),  # 게시글 조회, 수정, 삭제
+    path('board/', PostViewSet.as_view({'get': 'list'}), name="post_list"),
+    path('board/<str:category>/', PostViewSet.as_view({'get': 'list_by_category'}), name="post-category-list"), # 카테고리별 게시판의 게시글 조회
+    path('board/<str:category>/<int:category_id>/', PostViewSet.as_view({'get': 'retrieve_by_category', 'put': 'retrieve_by_category'}), name="post-detail"),  # 게시글 조회, 수정, 삭제
 ]

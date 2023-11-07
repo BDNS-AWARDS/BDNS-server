@@ -26,6 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 KAKAO_REST_API_KEY=config('KAKAO_REST_API_KEY')
 KAKAO_ADMIN_KEY=config('KAKAO_ADMIN_KEY')
+JWT_SECRET_KEY = config('JWT_SECRET_KEY')
+JWT_ALGORITHM = config('JWT_ALGORITHM')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.kakao',
+    'django_filters',
     
     #installed apps
     'accounts',
@@ -165,13 +168,17 @@ REST_FRAMEWORK = {
         'accounts.authentication.CookieAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
     )
-    
 }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'ALGORITHM': JWT_ALGORITHM,  # 알고리즘 설정
+    'SIGNING_KEY': JWT_SECRET_KEY,  # JWT 시크릿 키 설정
     'ROTATE_REFRESH_TOKENS': False,
     'TOKEN_USER_CLASS': 'django.contrib.auth.models.User',
 }
