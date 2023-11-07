@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     #installed apps
     'accounts',
     'boards',
-
 ]
 AUTH_USER_MODEL = 'accounts.User' 
 

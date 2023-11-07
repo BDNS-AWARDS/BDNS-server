@@ -56,3 +56,13 @@ class PostImage(models.Model):
    
    def __str__(self):
         return str(self.post)
+   
+class Scrap(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # 스크랩한 사용자
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # 스크랩한 게시글
+
+    class Meta:
+        unique_together = ('user', 'post')  # 사용자는 같은 게시글 중복 스크랩 불가능
+
+    def __str__(self):
+        return f"{self.user} 님이 스크랩한 글: {self.post.title}"

@@ -1,13 +1,15 @@
 from rest_framework import viewsets
-from .models import Post
+from .models import Post, Scrap
 from .serializers import *
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from accounts.authentication import AllowAnyAuthentication, CookieAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
+from itertools import chain
+from django.db.models import Value, CharField
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -53,3 +55,37 @@ class PostViewSet(viewsets.ModelViewSet):
             return PostRetrieveSeraizlier
         else:
             return PostSerializer
+
+
+class MypageView(generics.ListAPIView):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        user_posts = Post.objects.filter(writer=user)
+        user_scraps = Scrap.objects.filter(user=user)
+
+        return user_posts, user_scraps  # 두 쿼리셋을 튜플로 반환
+
+    def list(self, request, *args, **kwargs):
+        user_posts, user_scraps = self.get_queryset()
+        post_serializer = PostSerializer(user_posts, many=True)
+        scrap_serializer = ScrapSerializer(user_scraps, many=True)
+
+        combined_data = post_serializer.data + scrap_serializer.data  # 직렬화된 데이터 합치기
+
+        return Response(combined_data)
+
+class MyPostsView(generics.ListAPIView):
+    # 내가 작성한 글 목록 조회
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        return Post.objects.filter(writer=self.request.user)
+
+class MyScrapsView(generics.ListAPIView):
+    # 스크랩한 글 목록 조회
+    serializer_class = ScrapSerializer
+
+    def get_queryset(self):
+        return Scrap.objects.filter(user=self.request.user)
