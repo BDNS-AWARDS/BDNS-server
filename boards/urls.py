@@ -11,11 +11,7 @@ urlpatterns = [
     path('board/', PostViewSet.as_view({'get': 'list', 'post': 'create'}), name="post_list"),
     path('board/<str:category>/', PostViewSet.as_view({'get': 'list_by_category'}), name='post-category-list'), # 카테고리별 게시판의 게시글 조회
     path('board/<str:category>/<int:category_id>/', PostViewSet.as_view({'get': 'retrieve_by_category', 'put': 'retrieve_by_category'}), name="post-detail"), # 게시글 조회, 수정, 삭제
-    path('board/<str:category>/<int:category_id>/like', LikeCreateView.as_view(), name='like-create'),
-    path('board/<str:category>/<int:category_id>/unlike', LikeDeleteView.as_view(), name='like-delete'),
+    path('board/<str:category>/<int:category_id>/like', LikeView.as_view(), name='like'),
+    path('board/<str:category>/<int:category_id>/scrap/', ScrapView.as_view(), name='scrap'),
     path('mypage/', MypageView.as_view(), name='mypage'),
-    path('mypage/posts/', MyPostsView.as_view(), name='my-post'),
-    path('mypage/scraps/', MyScrapsView.as_view(), name='my-scrap'),
-    path('mypage/scraps/create/', ScrapCreateView.as_view(), name='scrap-create'),
-    path('mypage/scraps/<int:pk>/delete/', ScrapDeleteView.as_view(), name='scrap-delete'),
 ]
