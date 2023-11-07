@@ -89,3 +89,18 @@ class MyScrapsView(generics.ListAPIView):
 
     def get_queryset(self):
         return Scrap.objects.filter(user=self.request.user)
+    
+class ScrapCreateView(generics.CreateAPIView):
+    queryset = Scrap.objects.all()
+    serializer_class = ScrapSerializer
+
+class ScrapDeleteView(generics.DestroyAPIView):
+    queryset = Scrap.objects.all()
+    serializer_class = ScrapSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user != request.user:
+            return Response({"detail": "권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -14,4 +14,6 @@ urlpatterns = [
     path('mypage/', MypageView.as_view(), name='mypage'),
     path('mypage/posts/', MyPostsView.as_view(), name='my-post'),
     path('mypage/scraps/', MyScrapsView.as_view(), name='my-scrap'),
+    path('mypage/scraps/create/', ScrapCreateView.as_view(), name='scrap-create'),
+    path('mypage/scraps/<int:pk>/delete/', ScrapDeleteView.as_view(), name='scrap-delete'),
 ]
