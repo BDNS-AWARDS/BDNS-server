@@ -181,6 +181,8 @@ SIMPLE_JWT = {
     'SIGNING_KEY': JWT_SECRET_KEY,  # JWT 시크릿 키 설정
     'ROTATE_REFRESH_TOKENS': False,
     'TOKEN_USER_CLASS': 'django.contrib.auth.models.User',
+    'ALGORITHM': JWT_ALGORITHM,  # 알고리즘 설정
+    'SIGNING_KEY': JWT_SECRET_KEY,  # JWT 시크릿 키 설정
 }
 
 SITE_ID = 1

@@ -30,7 +30,7 @@ class CookieAuthentication(BaseAuthentication):
             raise AuthenticationFailed('No such user')
         
         return (user, None)
-    
+
 class AllowAnyAuthentication(BaseAuthentication):
     def authenticate(self, request):
         return (None, None)

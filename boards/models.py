@@ -38,7 +38,7 @@ class Post(models.Model):
     
     def __str__(self):
         return self.title
-
+      
 @receiver(post_save, sender=Post) # Post 모델 객체가 저장될 때 호출
 def assign_category_id(sender, instance, created, **kwargs):
     if created: # 새로운 글 생성된 경우
