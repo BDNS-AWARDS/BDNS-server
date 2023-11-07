@@ -10,6 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from itertools import chain
 from django.db.models import Value, CharField
+from rest_framework.views import APIView
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -55,8 +56,35 @@ class PostViewSet(viewsets.ModelViewSet):
             return PostRetrieveSeraizlier
         else:
             return PostSerializer
+        
+# 좋아요 누르기
+class LikeCreateView(APIView):
+    def post(self, request, category, category_id, format=None):
+        post = get_object_or_404(Post, category=category, category_id=category_id) # 게시글 가져오기
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
 
+        if created:  # 좋아요를 처음 추가한 경우
+            post.like_count += 1  # 좋아요 수 증가
+            post.save()
 
+        return Response({'message': '좋아요를 눌렀습니다.'}, status=status.HTTP_201_CREATED)
+    
+# 좋아요 삭제하기
+class LikeDeleteView(APIView):
+    def delete(self, request, category, category_id, format=None):
+        post = get_object_or_404(Post, category=category, category_id=category_id) # 게시글 가져오기
+        try:
+            like = Like.objects.get(user=request.user, post=post)
+        except Like.DoesNotExist:
+            return Response({'message': '이미 좋아요를 삭제했습니다.'}, status=status.HTTP_200_OK)
+
+        like.delete()  # 좋아요 삭제
+        post.like_count -= 1  # 좋아요 수 감소
+        post.save()
+
+        return Response({'message': '좋아요가 삭제되었습니다.'}, status=status.HTTP_200_OK)
+
+# 내가 작성한 글, 스크랩한 글 조회
 class MypageView(generics.ListAPIView):
     serializer_class = PostSerializer
 
@@ -76,24 +104,26 @@ class MypageView(generics.ListAPIView):
 
         return Response(combined_data)
 
+# 내가 작성한 글 목록 조회
 class MyPostsView(generics.ListAPIView):
-    # 내가 작성한 글 목록 조회
     serializer_class = PostSerializer
 
     def get_queryset(self):
         return Post.objects.filter(writer=self.request.user)
 
+# 스크랩한 글 목록 조회
 class MyScrapsView(generics.ListAPIView):
-    # 스크랩한 글 목록 조회
     serializer_class = ScrapSerializer
 
     def get_queryset(self):
         return Scrap.objects.filter(user=self.request.user)
     
+# 스크랩하기
 class ScrapCreateView(generics.CreateAPIView):
     queryset = Scrap.objects.all()
     serializer_class = ScrapSerializer
 
+# 스크랩 취소하기
 class ScrapDeleteView(generics.DestroyAPIView):
     queryset = Scrap.objects.all()
     serializer_class = ScrapSerializer

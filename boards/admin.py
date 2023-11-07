@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, PostImage, Scrap
+from .models import Post, PostImage, Scrap, Like
 
 class PostImageInline(admin.TabularInline): # 인라인으로 이미지 편집
     model = PostImage
@@ -11,3 +11,4 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ('category',)  # 카테고리로 필터링
 
 admin.site.register(Scrap)
+admin.site.register(Like)

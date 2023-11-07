@@ -55,6 +55,11 @@ class PostRetrieveSeraizlier(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = '__all__'
+
 class ScrapSerializer(serializers.ModelSerializer):
     post_title = serializers.SerializerMethodField()
     post_writer = serializers.SerializerMethodField()
