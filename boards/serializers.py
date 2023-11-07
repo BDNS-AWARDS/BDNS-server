@@ -14,7 +14,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['title', 'content', 'created_at', 'category', 'images']
+        fields = '__all__'
 
     def validate_images(self, value):
         max_images = 2  # 이미지 수 2개로 제한
@@ -32,18 +32,22 @@ class PostSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        exclude = ['like_count']
+        fields = '__all__'
+
+class PostListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'
 
 class PostCreateSeraizlier(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = 'title', 'content', 'image'
-    
+        fields = 'title', 'content', 'category'  
 
 class PostUpdateSerailizer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = 'title', 'content', 'image'
+        fields = 'title', 'content', 'category'
 
 class PostRetrieveSeraizlier(serializers.ModelSerializer):
     class Meta:

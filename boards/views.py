@@ -1,59 +1,55 @@
-from rest_framework import generics, viewsets
+from rest_framework import viewsets
 from .models import Post
-from .serializers import PostSerializer
+from .serializers import *
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from accounts.authentication import AllowAnyAuthentication, CookieAuthentication
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [AllowAny]
     authentication_classes = [AllowAnyAuthentication]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["category"]
 
-class PostListView(generics.ListCreateAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-
-    def filter_by_category(self, queryset, category):
-        return queryset.filter(category=category) # 카테고리에 해당하는 게시글만 필터링하기
-
-    def list(self, request, *args, **kwargs):
-        category = self.kwargs.get('category')
-        queryset = self.get_queryset()
-        queryset = self.filter_by_category(queryset, category)
+    @action(detail=False, methods=['get'])
+    def list_by_category(self, request, category):
+        queryset = self.queryset.filter(category=category)
+        print(category)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-
-    # 게시글 조회
-    def retrieve(self, request, *args, **kwargs):
-        category = kwargs['category'] # 카테고리에 해당하는 게시글 찾기
-        post_id = kwargs['post_id']
-        post = get_object_or_404(Post, category=category, id=post_id)
-        serializer = self.get_serializer(post)
-        return Response(serializer.data)
-
-    # 게시글 수정
-    def update(self, request, *args, **kwargs):
-        category = kwargs['category']
-        post_id = kwargs['post_id']
-        post = get_object_or_404(Post, category=category, id=post_id) # 카테고리와 게시글 id로 게시글 찾기
-        serializer = self.get_serializer(post, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
+    @action(detail=False, methods=['get', 'put'])
+    def retrieve_by_category(self, request, category, category_id):
+        if request.method == 'GET':
+            # 게시글 조회
+            queryset = self.queryset.filter(category=category, category_id=category_id)
+            post = get_object_or_404(queryset)
+            serializer = self.get_serializer(post)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif request.method == 'PUT':
+            # 게시글 수정
+            queryset = self.queryset.filter(category=category, category_id=category_id)
+            post = get_object_or_404(queryset)
+            serializer = self.get_serializer(post, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # 게시글 삭제
-    def destroy(self, request, *args, **kwargs):
-        category = kwargs['category']
-        post_id = kwargs['post_id']
-        post = get_object_or_404(Post, category=category, id=post_id)
-        post.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return PostListSerializer
+        elif self.action == 'create':
+            return PostCreateSeraizlier
+        elif self.action == 'update' or self.action == 'partial_update':
+            return PostUpdateSerailizer
+        elif self.action == 'retrieve':
+            return PostRetrieveSeraizlier
+        else:
+            return PostSerializer

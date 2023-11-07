@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 User = get_user_model()
 
@@ -32,10 +34,21 @@ class Post(models.Model):
         ('next_year_me', '내년의_나')
     ]
     category = models.CharField(verbose_name='카테고리', max_length=20, choices=CATEGORY_CHOICES)
+    category_id = models.PositiveIntegerField()  # 별도의 카테고리별 ID
     
     def __str__(self):
         return self.title
-
+      
+@receiver(post_save, sender=Post) # Post 모델 객체가 저장될 때 호출
+def assign_category_id(sender, instance, created, **kwargs):
+    if created: # 새로운 글 생성된 경우
+        # 카테고리에서 가장 큰 category_id 값 찾기
+        last_post = Post.objects.filter(category=instance.category).order_by('-category_id').first()
+        if last_post:
+            instance.category_id = last_post.category_id + 1 # category_id에 1을 더해 중복 피하고, 고유한 id 갖게 함
+        else:
+            instance.category_id = 1
+        instance.save()
 
 class PostImage(models.Model):
    post = models.ForeignKey(Post, on_delete=models.CASCADE, default=None)
