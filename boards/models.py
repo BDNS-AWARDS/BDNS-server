@@ -37,10 +37,14 @@ class Post(models.Model):
     
     def __str__(self):
         return self.title
-
+    
+def post_image_path(instance, filename):
+    post = instance.post
+    return f'post/{post.id}/{post.created_at.strftime("%Y/%m/%d")}/{filename}'
+    
 class PostImage(models.Model):
    post = models.ForeignKey(Post, on_delete=models.CASCADE, default=None, related_name='image')
-   image = models.ImageField(upload_to="post/%Y/%m/%d/post_{post_id}")
+   image = models.ImageField(upload_to=post_image_path)
    
    def __str__(self):
         return str(self.post)

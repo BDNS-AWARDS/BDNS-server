@@ -33,17 +33,12 @@ class PostSerializer(serializers.ModelSerializer):
             PostImage.objects.create(post=instance, image=image_data)
         return instance
 
-class PostListSerializer(serializers.ModelSerializer):
+class PostUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = 'title', 'content', 'category', 'images'
 
-class PostUpdateSerailizer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = 'title', 'content', 'category'
-
-class PostRetrieveSeraizlier(serializers.ModelSerializer):
+class PostRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
