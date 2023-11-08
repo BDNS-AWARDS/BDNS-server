@@ -17,18 +17,21 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_nickname(self, value):
         min_length = 2
         max_length = 10
-        current_user = self.context['request'].user
-
-        if User.objects.filter(nickname=value).exclude(id=current_user.id).exists():
+        user = self.context['request'].user
+        # user nickname이 이미 존재하는 경우 : User.objects.filter(nickname=value).exclude(id=user.id)
+        # 회원가입 된 것이므로 본인 닉네임 제외하고 중복 검사
+        # user nickname이 none인 경우 : User.objects.filter(nickname=value)
+        # 회원가입 전이므로 모든 nickname 대해 중복 검사
+        existing_users = User.objects.filter(nickname=value).exclude(id=user.id)if user.nickname is not None else User.objects.filter(nickname=value)
+        
+        if existing_users.exists():
             raise serializers.ValidationError("이미 존재하는 닉네임입니다.")
-        elif not value:
+        if not value:
             raise serializers.ValidationError("닉네임을 입력해주세요.")
-        elif len(value) < min_length or len(value) > max_length:
+        if len(value) < min_length or len(value) > max_length:
             raise serializers.ValidationError("닉네임은 2~10자로 입력해야 합니다.")
         
         return value
-    
-
     class Meta:
         model = User
         fields = "id","username","nickname","profile_image"
