@@ -9,8 +9,12 @@ class PostImageSerializer(serializers.ModelSerializer):
         fields = ['image']
 
 class PostSerializer(serializers.ModelSerializer):
-    images = PostImageSerializer(many=True, read_only=True)  # 다중 이미지 필드 허용
-    category = serializers.CharField(source='category')
+    images = serializers.SerializerMethodField()
+
+    #게시글에 등록된 이미지 가져오기
+    def get_images(self, obj):
+        image = obj.image.all() 
+        return PostImageSerializer(instance=image, many=True, context=self.context).data
 
     class Meta:
         model = Post
@@ -23,26 +27,16 @@ class PostSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        post = Post.objects.create(**validated_data)
+        instance = Post.objects.create(**validated_data)
         image_set = self.context['request'].FILES
         for image_data in image_set.getlist('image'):
-            PostImage.objects.create(post=post, image=image_data)
-        return post
-
-class PostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = '__all__'
+            PostImage.objects.create(post=instance, image=image_data)
+        return instance
 
 class PostListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
-
-class PostCreateSeraizlier(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = 'title', 'content', 'category', 'category_id', 'writer'
 
 class PostUpdateSerailizer(serializers.ModelSerializer):
     class Meta:
