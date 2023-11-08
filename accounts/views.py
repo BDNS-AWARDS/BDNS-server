@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 import requests
 from django.shortcuts import redirect
 from django.conf import settings
@@ -182,14 +183,12 @@ class UserViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
         
 
-    @action(detail=False, methods=['GET'])
+    @action(detail=False, methods=['POST'])
     def check_nickname(self, request):
-        nickname = request.query_params.get('nickname')
-        if nickname:
-            exists = User.objects.filter(nickname=nickname).exists()
-            if exists:
-                return Response({'nickname_exists': True}, status=status.HTTP_200_OK)
-            else:
-                return Response({'nickname_exists': False}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': '닉네임을 제공해야 합니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        nickname = request.data.get('nickname')
+        try:
+            serializer = UserSerializer(data={'nickname': nickname}, context={'request': request})
+            serializer.validate_nickname(nickname)
+            return Response({'Response': "Success"}, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({'Response': "Fail", 'error': e.detail}, status=status.HTTP_400_BAD_REQUEST)

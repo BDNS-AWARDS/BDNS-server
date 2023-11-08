@@ -12,7 +12,23 @@ class CustomTokenRefreshSerializer(serializers.Serializer):
         return data
     
 class UserSerializer(serializers.ModelSerializer):
+    profile_image = serializers.ImageField(use_url=True, required=False)
+    
+    def validate_nickname(self, value):
+        min_length = 2
+        max_length = 10
+        current_user = self.context['request'].user
+
+        if User.objects.filter(nickname=value).exclude(id=current_user.id).exists():
+            raise serializers.ValidationError("이미 존재하는 닉네임입니다.")
+        elif not value:
+            raise serializers.ValidationError("닉네임을 입력해주세요.")
+        elif len(value) < min_length or len(value) > max_length:
+            raise serializers.ValidationError("닉네임은 2~10자로 입력해야 합니다.")
+        
+        return value
+    
 
     class Meta:
         model = User
-        fields = "__all__"
+        fields = "id","username","nickname","profile_image"
