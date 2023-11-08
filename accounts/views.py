@@ -36,6 +36,7 @@ class KakaoLogin(SocialLoginView):
 @csrf_exempt
 def kakao_login(request):
     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
+    print("toLogin")
     return redirect(
         f"https://kauth.kakao.com/oauth/authorize?client_id={rest_api_key}&redirect_uri={KAKAO_CALLBACK_URI}&response_type=code"
     )
@@ -44,6 +45,7 @@ def kakao_callback(request):
     rest_api_key = getattr(settings, 'KAKAO_REST_API_KEY')
     code = request.GET.get("code")
     redirect_uri = KAKAO_CALLBACK_URI
+    print("before token req")
 
     # Access Token Request
     token_req = requests.post(
@@ -56,6 +58,7 @@ def kakao_callback(request):
         return JsonResponse({'error': error}, status=status.HTTP_400_BAD_REQUEST)
     access_token = token_req_json.get('access_token')
     
+    print("before profile req")
     # Get User Profile
     profile_request = requests.get(
         "https://kapi.kakao.com/v2/user/me",
