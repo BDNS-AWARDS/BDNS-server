@@ -3,6 +3,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
+def get_file_path(instance, filename):
+    return f'profile_image/{instance.id}/{filename}'
 
 class UserManager(BaseUserManager):
     """
@@ -38,7 +40,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = models.CharField(max_length=255, unique=True)
     nickname = models.CharField(max_length=255, blank=True, null=True)
-    profile_image = models.ImageField(blank=True, null=True)
+    profile_image = models.ImageField(null=True,upload_to=get_file_path, default='profile_image/default.png')
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
@@ -47,4 +49,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-    
