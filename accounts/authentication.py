@@ -13,7 +13,7 @@ class CookieAuthentication(BaseAuthentication):
         if not access_token:
             return None
         
-        payload = jwt.decode(access_token, settings.JWT_SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(access_token, settings.JWT_SECRET_KEY, algorithms=getattr(settings, 'JWT_ALGORITHM'))
 
         expire = payload.get('exp')
 
