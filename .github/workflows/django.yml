@@ -58,19 +58,24 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
+  CD:
+    if: github.event.pull_request.merged == true
+    needs: [CI]
+    
+    runs-on: ubuntu-20.04
 
-          steps:
-            ### SSH Connect and Docker Image Pull and Container Run
-            - name: Docker Image Pull and Container Run
-              uses: appleboy/ssh-action@v1.0.0
-              with:
-                host: ${{ secrets.SSH_HOST }}
-                username: ${{ secrets.SSH_USERNAME }}
-                key: ${{ secrets.SSH_PRIVATE_KEY }}
-                port: ${{ secrets.SSH_PORT }}
-                script: |
-                  docker stop line4-bdns-was
-                  docker rm line4-bdns-was
-                  docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
-                  docker run -d --net line4-bdns -v line4-bdns-media:/app/media -v line4-bdns-static:/app/static -e TZ=Asia/Seoul -p 8000:8000 --name line4-bdns-was ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
+    steps:
+      ### SSH Connect and Docker Image Pull and Container Run
+    - name: Docker Image Pull and Container Run
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          docker stop line4-bdns-was
+          docker rm line4-bdns-was
+          docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
+          docker run -d --net line4-bdns -v line4-bdns-media:/app/media -v line4-bdns-static:/app/static -e TZ=Asia/Seoul -p 8000:8000 --name line4-bdns-was ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
         
