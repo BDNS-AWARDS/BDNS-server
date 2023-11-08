@@ -17,7 +17,7 @@ jobs:
           
       - name: Create .env
         shell: bash
-        run: /
+        run: |
           touch .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }} >> .env
