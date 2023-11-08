@@ -20,4 +20,4 @@ COPY . .
 RUN pip install gunicorn
 
 # Gunicorn 실행
-CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 bdns_server.wsgi:application"]
+CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 config.wsgi:application"]
