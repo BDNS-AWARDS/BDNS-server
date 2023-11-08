@@ -39,8 +39,8 @@ class Post(models.Model):
         return self.title
 
 class PostImage(models.Model):
-   post = models.ForeignKey(Post, on_delete=models.CASCADE, default=None)
-   image = models.ImageField(upload_to="post/%Y/%m/%d")
+   post = models.ForeignKey(Post, on_delete=models.CASCADE, default=None, related_name='image')
+   image = models.ImageField(upload_to="post/%Y/%m/%d/post_{post_id}")
    
    def __str__(self):
         return str(self.post)

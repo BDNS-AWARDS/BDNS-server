@@ -19,11 +19,69 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["category"]
 
+    # # 게시글 조회
+    # def retrieve(self, request, category, post_id):
+    #     post = get_object_or_404(self.queryset, category=category, id=post_id)
+    #     serializer = self.get_serializer(post)
+    #     return Response(serializer.data)
+
+    # # 게시글 수정
+    # def update(self, request, category, post_id):
+    #     post = get_object_or_404(self.queryset, category=category, id=post_id)
+    #     serializer = self.get_serializer(post, data=request.data, partial=True)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # # 게시글 삭제
+    # def destroy(self, request, category, post_id):
+    #     post = get_object_or_404(self.queryset, category=category, id=post_id)
+    #     post.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     category = kwargs.get('category')  # 카테고리 가져오기
+    #     post_id = kwargs.get('post_id')  # 게시글 ID 가져오기
+
+    #     try:
+    #         # 해당 카테고리와 게시글 ID를 사용하여 게시글을 조회합니다.
+    #         post = self.queryset.get(category=category, id=post_id)
+    #         serializer = self.get_serializer(post)
+    #         return Response(serializer.data)
+    #     except Post.DoesNotExist:
+    #         return Response({'detail': '게시글을 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+
+    # @action(detail=False, methods=["get"])
+    # def list_by_category(self, request, category):
+    #     queryset = self.queryset.filter(category=category)
+    #     print(category)
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
+
+    # @action(detail=False, methods=["get", "put"])
+    # def retrieve_by_category(self, request, category, category_id):
+    #     if request.method == "GET":
+    #         # 게시글 조회
+    #         queryset = self.queryset.filter(category=category, category_id=category_id)
+    #         post = get_object_or_404(queryset)
+    #         serializer = self.get_serializer(post)
+    #         return Response(serializer.data)
+    #     elif request.method == "PUT":
+    #         # 게시글 수정
+    #         queryset = self.queryset.filter(category=category, category_id=category_id)
+    #         post = get_object_or_404(queryset)
+    #         serializer = self.get_serializer(post, data=request.data)
+    #         if serializer.is_valid():
+    #             serializer.save()
+    #             return Response(serializer.data)
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def get_serializer_class(self):
         if self.action == 'list':
             return PostListSerializer
         elif self.action == 'create':
-            return PostCreateSeraizlier
+            return PostSerializer
         elif self.action == 'update' or self.action == 'partial_update':
             return PostUpdateSerailizer
         elif self.action == 'retrieve':
