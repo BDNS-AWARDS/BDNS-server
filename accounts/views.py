@@ -116,7 +116,7 @@ def kakao_callback(request):
     
     # 로그인 과정 및 토큰 발급을 거치고 난 후 redirect할 주소
     # frontend_redirect_uri = 'http://15.164.160.92'
-    frontend_redirect_uri = 'http://127.0.0.1:3000'
+    frontend_redirect_uri = 'http://127.0.0.1:8000'
 
     response = redirect(frontend_redirect_uri)
     response.set_cookie('access_token', access_token, max_age=36000, httponly=True)

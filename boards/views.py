@@ -18,56 +18,58 @@ class PostViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["category"]
 
-    def get_serializer_class(self):
-        if self.action == 'update' or self.action == 'partial_update':
-            return PostUpdateSerializer
-        elif self.action == 'retrieve':
-            return PostRetrieveSerializer
-        else:
-            return PostSerializer
+    # def get_serializer_class(self):
+    #     if self.action == 'update' or self.action == 'partial_update':
+    #         return PostUpdateSerializer
+    #     # elif self.action == 'retrieve':
+    #     #     return PostRetrieveSerializer
+    #     else:
+    #         return PostSerializer
+
+    
         
-    def list(self, request):
-        category = request.query_params.get('category', None)
-        post_id = request.query_params.get('post_id', None)
+    # def list(self, request):
+    #     category = request.query_params.get('category', None)
+    #     post_id = request.query_params.get('post_id', None)
 
-        if category:
-            queryset = Post.objects.filter(category=category)
-        else:
-            queryset = Post.objects.all()
+    #     if category:
+    #         queryset = Post.objects.filter(category=category)
+    #     else:
+    #         queryset = Post.objects.all()
 
-        if post_id:
-            queryset = queryset.filter(id=post_id)
+    #     if post_id:
+    #         queryset = queryset.filter(id=post_id)
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data) 
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data) 
 
-    # 게시글 조회
-    def retrieve(self, request, *args, **kwargs):
-        post_id = kwargs.get('pk')
-        try:
-            # 해당 게시글 ID를 사용하여 게시글을 조회합니다.
-            post = self.queryset.get(id=post_id)
-            serializer = self.get_serializer(post)
-            return Response(serializer.data)
-        except Post.DoesNotExist:
-            return Response({'detail': '게시글을 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+    # # 게시글 조회
+    # def retrieve(self, request, *args, **kwargs):
+    #     post_id = kwargs.get('pk')
+    #     try:
+    #         # 해당 게시글 ID를 사용하여 게시글을 조회합니다.
+    #         post = self.queryset.get(id=post_id)
+    #         serializer = self.get_serializer(post)
+    #         return Response(serializer.data)
+    #     except Post.DoesNotExist:
+    #         return Response({'detail': '게시글을 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
 
-    # 게시글 수정
-    def update(self, request, *args, **kwargs):
-        post_id = kwargs.get('pk')
-        post = get_object_or_404(self.queryset, id=post_id)
-        serializer = self.get_serializer(post, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # # 게시글 수정
+    # def update(self, request, *args, **kwargs):
+    #     post_id = kwargs.get('pk')
+    #     post = get_object_or_404(self.queryset, id=post_id)
+    #     serializer = self.get_serializer(post, data=request.data, partial=True)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # 게시글 삭제
-    def destroy(self, request, *args, **kwargs):
-        post_id = kwargs.get('pk')
-        post = get_object_or_404(self.queryset, id=post_id)
-        post.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # # 게시글 삭제
+    # def destroy(self, request, *args, **kwargs):
+    #     post_id = kwargs.get('pk')
+    #     post = get_object_or_404(self.queryset, id=post_id)
+    #     post.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
         
 # 좋아요 기능 (좋아요 누르기 및 삭제하기)
 class LikeView(APIView):

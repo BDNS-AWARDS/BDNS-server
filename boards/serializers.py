@@ -1,5 +1,8 @@
-from rest_framework import serializers
+from django.forms import ValidationError
+from rest_framework.response import Response
+from rest_framework import serializers, status
 from .models import *
+from accounts.serializers import UserSerializer
 
 class PostImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -20,19 +23,16 @@ class PostSerializer(serializers.ModelSerializer):
 
     #게시글에 등록된 이미지 가져오기
     def get_images(self, obj):
-        image = obj.image.all() 
-        return PostImageSerializer(instance=image, many=True, context=self.context).data
-
-    class Meta:
-        model = Post
-        fields = '__all__'
+        images = obj.images()
+        return PostImageSerializer(instance=images, many=True, context=self.context).data
 
     def create(self, validated_data):
         image_set = self.context['request'].FILES.getlist('image')
         max_images = 2  # 이미지 수 2개로 제한
 
         if len(image_set) > max_images:
-            raise serializers.ValidationError(f'최대 {max_images}개의 이미지를 업로드할 수 있습니다.')
+            response = {'error': f'최대 {max_images}개의 이미지를 업로드할 수 있습니다.'}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         instance = Post.objects.create(**validated_data)
 
@@ -40,43 +40,75 @@ class PostSerializer(serializers.ModelSerializer):
             PostImage.objects.create(post=instance, image=image_data)
         return instance
     
-class PostUpdateSerializer(serializers.ModelSerializer):
-    images = serializers.ListField(child=serializers.ImageField(), required=False)
-
-    def get_images(self, obj):
-        images = obj.image.all()
-        return PostImageSerializer(instance=images, many=True, context=self.context).data
-
-    class Meta:
-        model = Post
-        fields = 'title', 'content', 'category', 'images'
-
     def update(self, instance, validated_data):
         images_data = self.context['request'].FILES.getlist('image')
         max_images = 2  # 이미지 수 2개로 제한
 
         if len(images_data) > max_images:
-            raise serializers.ValidationError(f'최대 {max_images}개의 이미지를 업로드할 수 있습니다.')
+            response = {'error': f'최대 {max_images}개의 이미지를 업로드할 수 있습니다.'}
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+    
+        # 기존 이미지가 있는 경우 삭제
+        if images_data:
+            instance.image.all().delete()
         
-        instance.image.all().delete()  # 기존 이미지 삭제
-
         # 새로운 이미지 추가
         for image_data in images_data:
             PostImage.objects.create(post=instance, image=image_data)
 
         return super().update(instance, validated_data)
-    
-class PostRetrieveSerializer(serializers.ModelSerializer):
-    images = serializers.SerializerMethodField()
 
+    
     class Meta:
         model = Post
         fields = '__all__'
-        depth = 1
+    
+# class PostUpdateSerializer(serializers.ModelSerializer):
+#     images = serializers.ListField(child=serializers.ImageField(), required=False)
+#     writer = serializers.SerializerMethodField()
 
-    def get_images(self, obj):
-        images = obj.images()
-        return PostImageSerializer(instance=images, many=True, context=self.context).data
+#     def get_writer(self, obj):
+#         serializers = UserSerializer(instance=obj.writer, context=self.context)
+#         return serializers.data
+
+#     class Meta:
+#         model = Post
+#         fields = 'title','writer', 'content', 'category', 'images', 
+
+#     def update(self, instance, validated_data):
+#         images_data = self.context['request'].FILES.getlist('image')
+#         max_images = 2  # 이미지 수 2개로 제한
+
+#         if len(images_data) > max_images:
+#             raise serializers.ValidationError(f'최대 {max_images}개의 이미지를 업로드할 수 있습니다.')
+        
+#         # 기존 이미지 삭제
+#         if images_data:
+#             instance.image.all().delete()
+#             # 새로운 이미지 추가
+#             for image_data in images_data:
+#                 PostImage.objects.create(post=instance, image=image_data)
+
+#         return super().update(instance, validated_data)
+    
+# class PostRetrieveSerializer(serializers.ModelSerializer):
+#     writer = serializers.SerializerMethodField()
+#     images = serializers.SerializerMethodField()
+
+#     #게시글에 등록된 이미지 가져오기
+#     def get_images(self, obj):
+#         image = obj.image.all() 
+#         return PostImageSerializer(instance=image, many=True, context=self.context).data
+
+#     def get_writer(self, obj):
+#         serializers = UserSerializer(instance=obj.writer, context=self.context)
+#         return serializers.data
+
+#     class Meta:
+#         model = Post
+#         fields = '__all__'
+#         depth = 1
+
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
