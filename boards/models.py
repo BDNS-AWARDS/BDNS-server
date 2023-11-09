@@ -10,26 +10,27 @@ class Post(models.Model):
     created_at = models.DateTimeField(verbose_name='작성일', auto_now_add=True)
     like_count = models.IntegerField(verbose_name='좋아요 수', default=0)
     CATEGORY_CHOICES = [
-        ('best_movies', '올해의_영화'),
-        ('best_dramas', '올해의_드라마'),
-        ('best_books', '올해의_책'),
-        ('best_music', '올해의_음악'),
-        ('best_moments', '올해의_순간'),
-        ('best_hobbies', '올해의_취미'),
-        ('best_discoveries', '올해의_발견'),
-        ('best_habits', '올해의_습관'),
-        ('best_sadness', '올해의_우울'),
-        ('best_thoughts', '올해의_생각'),
-        ('best_failures', '올해의_실패'),
-        ('best_regrets', '올해의_후회'),
-        ('best_humor', '올해의_유머'),
-        ('best_tears', '올해의_눈물'),
-        ('best_spending', '올해의_소비'),
-        ('best_emotions', '올해의_감동'),
-        ('best_travels', '올해의_여행'),
-        ('best_food', '올해의_음식'),
-        ('best_gifts', '올해의_선물'),
-        ('next_year_me', '내년의_나')
+        ('best_movies', '#올해의_영화'),
+        ('best_dramas', '#올해의_드라마'),
+        ('best_books', '#올해의_책'),
+        ('best_music', '#올해의_음악'),
+        ('best_moments', '#올해의_순간'),
+        ('best_hobbies', '#올해의_취미'),
+        ('best_discoveries', '#올해의_발견'),
+        ('best_habits', '#올해의_습관'),
+        ('best_sadness', '#올해의_우울'),
+        ('best_thoughts', '#올해의_생각'),
+        ('best_failures', '#올해의_실패'),
+        ('best_regrets', '#올해의_후회'),
+        ('best_humor', '#올해의_유머'),
+        ('best_tears', '#올해의_눈물'),
+        ('best_spending', '#올해의_소비'),
+        ('best_emotions', '#올해의_감동'),
+        ('best_travels', '#올해의_여행'),
+        ('best_food', '#올해의_음식'),
+        ('best_gifts', '#올해의_선물'),
+        ('best_photos', '#올해의_사진'),
+        ('next_year_me', '#내년의_나')
     ]
     category = models.CharField(verbose_name='카테고리', max_length=20, choices=CATEGORY_CHOICES)
     
@@ -38,6 +39,10 @@ class Post(models.Model):
     
     def images(self):
         return self.image.all()  # PostImage 모델과의 관계
+
+    @classmethod
+    def get_category_choices(cls):
+        return cls.CATEGORY_CHOICES
     
 def post_image_path(instance, filename):
     post = instance.post
