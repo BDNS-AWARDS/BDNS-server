@@ -20,16 +20,16 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
 
-    def validate_images(self, value):
-        max_images = 2  # 이미지 수 2개로 제한
-        if len(value) > max_images:
-            raise serializers.ValidationError(f'최대 {max_images}개의 이미지를 업로드할 수 있습니다.')
-        return value
-
     def create(self, validated_data):
+        image_set = self.context['request'].FILES.getlist('image')
+        max_images = 2  # 이미지 수 2개로 제한
+
+        if len(image_set) > max_images:
+            raise serializers.ValidationError(f'최대 {max_images}개의 이미지를 업로드할 수 있습니다.')
+
         instance = Post.objects.create(**validated_data)
-        image_set = self.context['request'].FILES
-        for image_data in image_set.getlist('image'):
+
+        for image_data in image_set:
             PostImage.objects.create(post=instance, image=image_data)
         return instance
 
