@@ -60,11 +60,16 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
     
 class PostRetrieveSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = '__all__'
         depth = 1
+
+    def get_images(self, obj):
+        images = obj.image.all()
+        return PostImageSerializer(instance=images, many=True, context=self.context).data
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
