@@ -7,10 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from accounts.authentication import AllowAnyAuthentication, CookieAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import action
 from rest_framework.views import APIView
-from django.http import Http404
-from rest_framework.exceptions import NotFound
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -74,8 +71,8 @@ class PostViewSet(viewsets.ModelViewSet):
         
 # 좋아요 기능 (좋아요 누르기 및 삭제하기)
 class LikeView(APIView):
-    def post(self, request, category, post_id, format=None):
-        post = get_object_or_404(Post, category=category, id=post_id)  # 게시글 가져오기
+    def post(self, request, post_id, format=None):
+        post = get_object_or_404(Post, id=post_id)  # 게시글 가져오기
         like, created = Like.objects.get_or_create(user=request.user, post=post)
 
         if created:  # 좋아요를 처음 추가한 경우
@@ -92,8 +89,8 @@ class LikeView(APIView):
     
 # 스크랩 기능
 class ScrapView(APIView):
-    def post(self, request, category, post_id, format=None):
-        post = get_object_or_404(Post, category=category, id=post_id)
+    def post(self, request, post_id, format=None):
+        post = get_object_or_404(Post, id=post_id)
         scrap, created = Scrap.objects.get_or_create(user=request.user, post=post)
 
         if created:
@@ -109,8 +106,8 @@ class MypageView(APIView):
         user_posts = Post.objects.filter(writer=user)
         user_scraps = Scrap.objects.filter(user=user)
 
-        post_serializer = PostSerializer(user_posts, many=True)
-        scrap_serializer = ScrapSerializer(user_scraps, many=True)
+        post_serializer = PostSerializer(user_posts, many=True, context={'request': request})
+        scrap_serializer = ScrapSerializer(user_scraps, many=True, context={'request': request})
 
         data = {
             "user_posts": post_serializer.data,
