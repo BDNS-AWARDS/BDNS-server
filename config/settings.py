@@ -34,6 +34,22 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:8000',
+
+    'http://localhost',
+    'http://localhost:3000',
+    'http://localhost:8000',
+    
+    'http://15.164.160.92',
+    'http://15.164.160.92:3000',
+    'http://15.164.160.92:8000',    
+    
+]
 
 # Application definition
 
@@ -44,6 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     #libraries
     'rest_framework',
     'rest_framework_simplejwt',
@@ -63,6 +80,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'accounts.User' 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -191,3 +209,4 @@ ACCOUNT_EMAIL_REQUIRED = None
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
