@@ -17,10 +17,17 @@ class PostImageSerializer(serializers.ModelSerializer):
         if request:
             data['image'] = request.build_absolute_uri(instance.image.url) # 이미지 URL을 절대 경로로 가져오기
         return data
+    
+class CategorySerializer(serializers.Serializer):
+    categories = serializers.ListField(
+        child=serializers.DictField(
+            child=serializers.CharField()
+        )
+    )
 
 class PostSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
-
+    
     #게시글에 등록된 이미지 가져오기
     def get_images(self, obj):
         images = obj.images()
