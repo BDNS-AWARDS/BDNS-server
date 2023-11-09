@@ -67,7 +67,8 @@ def kakao_callback(request):
         headers={"Authorization": f"Bearer {access_token}"}
     )
     profile_json = profile_request.json()
-
+    print("after profile req")
+    print(profile_json)
     error = profile_json.get("error")
     if error is not None:
         return JsonResponse({'error': error}, status=status.HTTP_400_BAD_REQUEST)
