@@ -25,8 +25,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .authentication import CookieAuthentication
 
 BASE_URL = 'http://15.164.160.92'
-KAKAO_CALLBACK_URI = BASE_URL + '/api/kakao/callback'
-# KAKAO_CALLBACK_URI = 'http://localhost:5173/App/Mainpage'
+# KAKAO_CALLBACK_URI = BASE_URL + '/api/kakao/callback'
+KAKAO_CALLBACK_URI = 'http://localhost:3000/Mainpage'
 
 class KakaoLogin(SocialLoginView):
     adapter_class = kakao_view.KakaoOAuth2Adapter
@@ -111,7 +111,7 @@ def kakao_callback(request):
     refresh_token = RefreshToken.for_user(user)
     access_token = str(refresh_token.access_token)
     
-    redirect_uri = BASE_URL
+    redirect_uri = KAKAO_CALLBACK_URI
 
     response = redirect(redirect_uri)
     response.set_cookie('access_token', access_token, max_age=36000, httponly=True)
