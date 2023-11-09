@@ -24,9 +24,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .authentication import CookieAuthentication
 
+# BASE_URL = 서버 도메인 
 BASE_URL = 'http://15.164.160.92'
-# KAKAO_CALLBACK_URI = BASE_URL + '/api/kakao/callback'
-KAKAO_CALLBACK_URI = 'http://localhost:3000/api/kakao/callback'
+# BASE_URL = 'http://127.0.0.1:8000'
+KAKAO_CALLBACK_URI = BASE_URL + '/api/kakao/callback'
+# KAKAO_CALLBACK_URI = 'http://localhost:3000/api/kakao/callback'
 
 class KakaoLogin(SocialLoginView):
     adapter_class = kakao_view.KakaoOAuth2Adapter
@@ -111,9 +113,11 @@ def kakao_callback(request):
     refresh_token = RefreshToken.for_user(user)
     access_token = str(refresh_token.access_token)
     
-    redirect_uri = 'http://localhost:3000'
+    # 로그인 과정 및 토큰 발급을 거치고 난 후 redirect할 주소
+    frontend_redirect_uri = 'http://15.164.160.92'
+    # frontend_redirect_uri = 'http://127.0.0.1:3000'
 
-    response = redirect(redirect_uri)
+    response = redirect(frontend_redirect_uri)
     response.set_cookie('access_token', access_token, max_age=36000, httponly=True)
 
     return response
