@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 User = get_user_model()
 
@@ -37,6 +35,9 @@ class Post(models.Model):
     
     def __str__(self):
         return self.title
+    
+    def images(self):
+        return self.image.all()  # PostImage 모델과의 관계
     
 def post_image_path(instance, filename):
     post = instance.post
