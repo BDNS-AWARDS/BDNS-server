@@ -9,7 +9,11 @@ class PostImageSerializer(serializers.ModelSerializer):
         fields = ['image']
 
     def to_representation(self, instance):
-        return instance.image.url
+        data = super().to_representation(instance)
+        request = self.context.get('request')  # 'request' 키를 가져오고, 없으면 None을 반환
+        if request:
+            data['image'] = request.build_absolute_uri(instance.image.url) # 이미지 URL을 절대 경로로 가져오기
+        return data
 
 class PostSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
@@ -39,6 +43,10 @@ class PostSerializer(serializers.ModelSerializer):
 class PostUpdateSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.ImageField(), required=False)
 
+    def get_images(self, obj):
+        images = obj.image.all()
+        return PostImageSerializer(instance=images, many=True, context=self.context).data
+
     class Meta:
         model = Post
         fields = 'title', 'content', 'category', 'images'
@@ -50,8 +58,7 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         if len(images_data) > max_images:
             raise serializers.ValidationError(f'최대 {max_images}개의 이미지를 업로드할 수 있습니다.')
         
-        # 기존 이미지 삭제
-        instance.image.all().delete()
+        instance.image.all().delete()  # 기존 이미지 삭제
 
         # 새로운 이미지 추가
         for image_data in images_data:
@@ -60,11 +67,16 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
     
 class PostRetrieveSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = '__all__'
         depth = 1
+
+    def get_images(self, obj):
+        images = obj.images()
+        return PostImageSerializer(instance=images, many=True, context=self.context).data
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
