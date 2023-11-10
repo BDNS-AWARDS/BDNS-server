@@ -57,7 +57,7 @@ class PostSerializer(serializers.ModelSerializer):
         return PostImageSerializer(instance=images, many=True, context=self.context).data
 
     def create(self, validated_data):
-        image_set = self.context['request'].FILES.getlist('image')
+        image_set = self.context['request'].FILES.getlist('images')
         max_images = 2  # 이미지 수 2개로 제한
 
         if len(image_set) > max_images:
@@ -69,6 +69,7 @@ class PostSerializer(serializers.ModelSerializer):
         for image_data in image_set:
             PostImage.objects.create(post=instance, image=image_data)
         return instance
+
     
     def update(self, instance, validated_data):
         images_data = self.context['request'].FILES.getlist('image')
