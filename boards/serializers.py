@@ -134,6 +134,9 @@ class LikeSerializer(serializers.ModelSerializer):
 class ScrapSerializer(serializers.ModelSerializer):
     post_title = serializers.SerializerMethodField()
     post_writer = serializers.SerializerMethodField()
+
+    category = serializers.SerializerMethodField()
+
     class Meta:
         model = Scrap
         fields = '__all__'
@@ -143,3 +146,6 @@ class ScrapSerializer(serializers.ModelSerializer):
 
     def get_post_writer(self, scrap):
         return scrap.post.writer.username
+    
+    def get_category(self, scrap):
+        return scrap.post.category
