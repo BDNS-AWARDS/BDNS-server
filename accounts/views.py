@@ -120,7 +120,9 @@ def kakao_callback(request):
     print("check nickname")
     # print(request.user.nickname)
     
+
     if user.nickname != '' and user.nickname != None: 
+
         frontend_redirect_uri += '/mainpage'
     else:
         frontend_redirect_uri += '/setprofile'
