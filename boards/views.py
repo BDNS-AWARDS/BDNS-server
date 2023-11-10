@@ -108,6 +108,7 @@ class MypageView(APIView):
         user_posts = Post.objects.filter(writer=user)
         user_scraps = Scrap.objects.filter(user=user)
         
+        user_data = UserProfileSerializer(user).data
         post_data = PostSerializer(user_posts, many=True).data
         scrap_data = ScrapSerializer(user_scraps, many=True).data
 
@@ -117,6 +118,7 @@ class MypageView(APIView):
             post['is_scrapped'] = Scrap.objects.filter(user=user, post=post['id']).exists()
 
         data = {
+            "user_info": user_data, 
             "user_posts": post_data,
             "user_scraps": scrap_data,
         }
