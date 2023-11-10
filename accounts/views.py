@@ -80,6 +80,7 @@ def kakao_callback(request):
 
     user_id = nickname + "_" + str(profile_json.get('id'))
 
+    is_user = False
     # Signup or Signin
     try:
         user = User.objects.get(username=user_id)
@@ -94,7 +95,8 @@ def kakao_callback(request):
         accept_status = accept.status_code
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signin'}, status=accept_status)
-        
+        is_user = True
+
     except User.DoesNotExist:
         # 새로운 사용자의 경우
         user = User.objects.create_user(username=user_id, password=None)
@@ -110,13 +112,14 @@ def kakao_callback(request):
 
         if accept_status != 200:
             return JsonResponse({'err_msg': 'failed to signup'}, status=accept_status)
-        
+    
     refresh_token = RefreshToken.for_user(user)
     access_token = str(refresh_token.access_token)
     
     # 로그인 과정 및 토큰 발급을 거치고 난 후 redirect할 주소
     # frontend_redirect_uri = 'http://15.164.160.92'
-    frontend_redirect_uri = 'http://127.0.0.1:8000'
+    frontend_redirect_uri = 'http://127.0.0.1:3000'
+    frontend_redirect_uri += '/mainpage' if is_user else '/setprofile'
 
     response = redirect(frontend_redirect_uri)
     response.set_cookie('access_token', access_token, max_age=36000, httponly=True)
