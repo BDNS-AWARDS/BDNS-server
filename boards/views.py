@@ -107,13 +107,18 @@ class MypageView(APIView):
         user = request.user
         user_posts = Post.objects.filter(writer=user)
         user_scraps = Scrap.objects.filter(user=user)
+        
+        post_data = PostSerializer(user_posts, many=True).data
+        scrap_data = ScrapSerializer(user_scraps, many=True).data
 
-        post_serializer = PostSerializer(user_posts, many=True, context={'request': request})
-        scrap_serializer = ScrapSerializer(user_scraps, many=True, context={'request': request})
+        # 좋아요 및 스크랩 정보 추가
+        for post in post_data:
+            post['is_liked'] = Like.objects.filter(user=user, post=post['id']).exists()
+            post['is_scrapped'] = Scrap.objects.filter(user=user, post=post['id']).exists()
 
         data = {
-            "user_posts": post_serializer.data,
-            "user_scraps": scrap_serializer.data,
+            "user_posts": post_data,
+            "user_scraps": scrap_data,
         }
 
         return Response(data, status=status.HTTP_200_OK)
