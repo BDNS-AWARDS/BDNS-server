@@ -29,6 +29,15 @@ class PostSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
 
+    profile_image = serializers.SerializerMethodField()
+
+    def get_profile_image(self, obj):
+        if obj.writer.profile_image:
+            request = self.context.get('request')
+            return request.build_absolute_uri(obj.writer.profile_image.url)
+        else:
+            return None
+
     def get_nickname(self, obj):
         return obj.writer.nickname
     # writer = serializers.SerializerMethodField()
@@ -134,6 +143,9 @@ class LikeSerializer(serializers.ModelSerializer):
 class ScrapSerializer(serializers.ModelSerializer):
     post_title = serializers.SerializerMethodField()
     post_writer = serializers.SerializerMethodField()
+
+    category = serializers.SerializerMethodField()
+
     class Meta:
         model = Scrap
         fields = '__all__'
@@ -143,3 +155,6 @@ class ScrapSerializer(serializers.ModelSerializer):
 
     def get_post_writer(self, scrap):
         return scrap.post.writer.username
+    
+    def get_category(self, scrap):
+        return scrap.post.category
