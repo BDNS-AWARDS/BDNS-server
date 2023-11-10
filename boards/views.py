@@ -126,7 +126,7 @@ class MypageView(APIView):
 class CategoryViewSet(viewsets.ViewSet):
     CATEGORY_CHOICES = [
         ('select','#카테고리를_선택해주세요!'),
-        ('best_all', '#전체'),
+        ('best_all', '#all'),
         ('best_movies', '#올해의_영화'),
         ('best_dramas', '#올해의_드라마'),
         ('best_books', '#올해의_책'),
