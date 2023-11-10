@@ -11,13 +11,13 @@ from rest_framework.views import APIView
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [CookieAuthentication]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["category"]
-
+    
     # def get_serializer_class(self):
     #     if self.action == 'update' or self.action == 'partial_update':
     #         return PostUpdateSerializer
