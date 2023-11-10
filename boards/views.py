@@ -13,8 +13,8 @@ from rest_framework.views import APIView
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [AllowAny]
-    authentication_classes = [AllowAnyAuthentication]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [CookieAuthentication]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["category"]
 

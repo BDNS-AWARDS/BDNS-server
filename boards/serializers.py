@@ -27,6 +27,11 @@ class CategorySerializer(serializers.Serializer):
 
 class PostSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
+    writer = serializers.SerializerMethodField()
+
+    def get_writer(self, obj):
+        serializers = UserSerializer(instance=obj.writer, context=self.context)
+        return serializers.data
     
     #게시글에 등록된 이미지 가져오기
     def get_images(self, obj):
