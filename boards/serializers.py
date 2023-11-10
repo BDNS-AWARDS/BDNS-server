@@ -2,7 +2,7 @@ from django.forms import ValidationError
 from rest_framework.response import Response
 from rest_framework import serializers, status
 from .models import *
-from accounts.serializers import UserSerializer
+from accounts.serializers import UserSerializer, UserProfileSerializer
 
 class PostImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -28,15 +28,20 @@ class CategorySerializer(serializers.Serializer):
 class PostSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
-    profile_image = serializers.SerializerMethodField()
+    def get_user(self, obj):
+        serializers = UserProfileSerializer(instance=obj.writer, context=self.context)
+        return serializers.data
 
-    def get_profile_image(self, obj):
-        if obj.writer.profile_image:
-            request = self.context.get('request')
-            return request.build_absolute_uri(obj.writer.profile_image.url)
-        else:
-            return None
+    # profile_image = serializers.SerializerMethodField()
+
+    # def get_profile_image(self, obj):
+    #     if obj.writer.profile_image:
+    #         request = self.context.get('request')
+    #         return request.build_absolute_uri(obj.writer.profile_image.url)
+    #     else:
+    #         return None
 
     def get_nickname(self, obj):
         return obj.writer.nickname

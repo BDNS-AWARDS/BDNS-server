@@ -35,3 +35,17 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "id","username","nickname","profile_image"
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    profile_image = serializers.ImageField(use_url=True, required=False)
+    
+    def get_profile_image(self, obj):
+        if obj.profile_image is not None:
+            return obj.profile_image.url
+        
+        return None
+    class Meta:
+        model = User
+        fields = "nickname", "profile_image"
+
+        
