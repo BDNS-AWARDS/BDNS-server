@@ -18,11 +18,11 @@ class CookieAuthentication(BaseAuthentication):
         expire = payload.get('exp')
 
         if expire < time.time():
-            raise None
+            return None
         
         user_id = payload.get('user_id')
         if not user_id:
-            raise None
+            return None
         
         try:
             user = User.objects.get(pk=user_id)

@@ -121,12 +121,12 @@ def kakao_callback(request):
     # print(request.user.nickname)
     
     if user.nickname != '':
-        frontend_redirect_uri += '/setprofile'
-    else:
         frontend_redirect_uri += '/mainpage'
+    else:
+        frontend_redirect_uri += '/setprofile'
 
     response = redirect(frontend_redirect_uri)
-    response.set_cookie('access_token', access_token, max_age=36000, httponly=True)
+    response.set_cookie('access_token', access_token, max_age=360000, httponly=True)
 
     return response
 
