@@ -78,6 +78,7 @@ class LikeView(APIView):
     def post(self, request, post_id, format=None):
         post = get_object_or_404(Post, id=post_id)  # 게시글 가져오기
         like, created = Like.objects.get_or_create(user=request.user, post=post)
+        like_count = post.like_count
 
         if created:  # 좋아요를 처음 추가한 경우
             post.like_count += 1  # 좋아요 수 증가
