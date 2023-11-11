@@ -10,6 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from django.db import transaction
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -74,11 +75,18 @@ class PostViewSet(viewsets.ModelViewSet):
     #     return Response(status=status.HTTP_204_NO_CONTENT)
         
 # 좋아요 기능 (좋아요 누르기 및 삭제하기)
-class LikeView(APIView):    
+class LikeView(APIView):   
+    def get(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        like_count = post.like_count # 좋아요 개수 가져오기
+
+        return Response({'like_count': like_count}, status=status.HTTP_200_OK)
+
+    @transaction.atomic
     def post(self, request, post_id, format=None):
         post = get_object_or_404(Post, id=post_id)  # 게시글 가져오기
         like, created = Like.objects.get_or_create(user=request.user, post=post)
-        like_count = post.like_count # 좋아요 개수 가져오기
+        like_count = post.like_count
 
         if created:  # 좋아요를 처음 추가한 경우
             post.like_count += 1  # 좋아요 수 증가
