@@ -8,6 +8,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from accounts.authentication import AllowAnyAuthentication, CookieAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -72,7 +74,7 @@ class PostViewSet(viewsets.ModelViewSet):
     #     return Response(status=status.HTTP_204_NO_CONTENT)
         
 # 좋아요 기능 (좋아요 누르기 및 삭제하기)
-class LikeView(APIView):
+class LikeView(APIView):    
     def post(self, request, post_id, format=None):
         post = get_object_or_404(Post, id=post_id)  # 게시글 가져오기
         like, created = Like.objects.get_or_create(user=request.user, post=post)
@@ -89,6 +91,16 @@ class LikeView(APIView):
 
         return Response({'message': message}, status=status.HTTP_201_CREATED)
     
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_like_status(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    user = request.user
+
+    # 사용자가 해당 게시물에 좋아요를 눌렀는지 여부 확인
+    is_liked = post.likes.filter(user=user).exists()
+    return Response({'is_liked': is_liked})
+    
 # 스크랩 기능
 class ScrapView(APIView):
     def post(self, request, post_id, format=None):
@@ -100,6 +112,16 @@ class ScrapView(APIView):
         else:
             scrap.delete()
             return Response({'message': '스크랩을 삭제했습니다.'}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_scrap_status(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    user = request.user
+
+    # 사용자가 해당 게시물을 스크랩했는지 여부 확인
+    is_scrapped = post.scraps.filter(user=user).exists()
+    return Response({'is_scrapped': is_scrapped})
         
 # 내가 쓴 글, 내가 스크랩한 글 목록 보기
 class MypageView(APIView):

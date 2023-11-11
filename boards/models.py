@@ -57,7 +57,7 @@ class PostImage(models.Model):
    
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # 좋아요 누른 사용자
-    post = models.ForeignKey(Post, on_delete=models.CASCADE) # 좋아요 누른 게시글
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes') # 좋아요 누른 게시글
 
     class Meta:
         unique_together = ('user', 'post')  # 사용자는 같은 게시글에 중복 좋아요 불가능
@@ -68,7 +68,7 @@ class Like(models.Model):
    
 class Scrap(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # 스크랩한 사용자
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)  # 스크랩한 게시글
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='scraps')  # 스크랩한 게시글
 
     class Meta:
         unique_together = ('user', 'post')  # 사용자는 같은 게시글 중복 스크랩 불가능
