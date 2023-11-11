@@ -77,5 +77,5 @@ jobs:
           docker stop line4-bdns-was
           docker rm line4-bdns-was
           docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
-          docker run -d --net line4-bdns -v line4-bdns-media:/app/media -e TZ=Asia/Seoul -p 8000:8000 --name line4-bdns-was ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
+          docker run -d --net line4-bdns -v line4-bdns-media:/app/media -v line4-bdns-static:/app/static -e TZ=Asia/Seoul -p 8000:8000 --name line4-bdns-was ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
         
