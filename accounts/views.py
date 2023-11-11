@@ -25,8 +25,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .authentication import CookieAuthentication
 
 # BASE_URL = 서버 도메인 
-# BASE_URL = 'http://15.164.160.92'
-BASE_URL = 'http://127.0.0.1:8000'
+BASE_URL = 'http://15.164.160.92'
+# BASE_URL = 'http://127.0.0.1:8000'
 KAKAO_CALLBACK_URI = BASE_URL + '/api/kakao/callback'
 # KAKAO_CALLBACK_URI = 'http://localhost:3000/api/kakao/callback'
 

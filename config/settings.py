@@ -48,6 +48,11 @@ CORS_ALLOWED_ORIGINS = [
     'http://15.164.160.92',
     'http://15.164.160.92:3000',
     'http://15.164.160.92:8000',    
+
+
+    'http://3.39.94.87',
+    'http://3.39.94.87:3000',
+    'http://3.39.94.87:8000',
     
 ]
 
@@ -157,8 +162,8 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'bstatic/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'bstatic')
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
